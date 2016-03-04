@@ -32,6 +32,8 @@ class Bot(object):
         self.pos = Pos(**pos) if pos else None
         self.hp = hp
 
+        self.detected = False
+
 class Team(object):
     def __init__(self, name, teamId, bots=None, **kwargs):
         self.name = name
@@ -48,8 +50,6 @@ class Event(object):
         self.damage = damage
         self.pos = Pos(**pos) if pos else None
         self.winner_team_id = winnerTeamId
-    def to_str(self):
-        return "event: {}, bot_id: {}, source: {}, damage: {}, pos {}, winner_team_id: {}".format(self.event, self.bot_id, self.source, self.damage, self.pos, self.winner_team_id)
 
 
 # Message types
