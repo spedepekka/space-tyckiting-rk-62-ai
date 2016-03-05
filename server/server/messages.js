@@ -47,7 +47,8 @@ function mkStartMessage(player, players, bots, config) {
     };
 }
 
-function mkRoundSummaryMessage(players, bots, config, asteroids, roundId, actions, events) {
+//TODO THIS NEEDS TO BE MODIFIED TO TAKE IN ROUND START AND RESPONSE TIMES
+function mkRoundSummaryMessage(players, bots, config, asteroids, roundId, actions, events, responseTimes) {
     console.log("EVENTS", events);
     return {
         type: "round",
@@ -56,7 +57,8 @@ function mkRoundSummaryMessage(players, bots, config, asteroids, roundId, action
         teams: combineTeams(players, bots),
         asteroids: asteroids,
         events: events,
-        actions: actions
+        actions: actions,
+        responseTimes: responseTimes
     };
 }
 
