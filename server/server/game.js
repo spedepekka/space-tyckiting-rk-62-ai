@@ -32,12 +32,9 @@ function socketSend(socket, type, message) {
 }
 
 function Round(allPlayers, nextStep, loopTime, noWait, roundResponseTimes) {
-    //TODO LOG ROUND START
+    //Take round start time to variable
     var roundStartTime = new Date().getTime();
     roundResponseTimes.push({rondStartTime: roundStartTime});
-    //var roundStartTimeMS = new Date().getTime();
-    //console.log("Current round started at: ", roundStartTimeMS);
-    //roundStartTime = roundStartTimeMS;
 
     var players = _.where(allPlayers, {active: true}).map(function (player) {
         return player.teamId;
@@ -49,10 +46,8 @@ function Round(allPlayers, nextStep, loopTime, noWait, roundResponseTimes) {
     }, loopTime);
 
     function registerAction(player) {
-        //TODO LOG ACTION RECEIVED
+        //Take action response time to variable
         var playerResponseTime = (new Date().getTime() - roundStartTime) + "ms";
-        //console.log("Action received from player by id: ", player.teamId);
-        //console.log("Time is: ", playerResponseTime);
         roundResponseTimes.push({playerID: player.teamId, playerResponseTime})
         actedPlayers.push(player.teamId);
         if (noWait && _.isEmpty(_.difference(players, actedPlayers))) {
@@ -202,11 +197,6 @@ function Game(config, keepAlive, ws, gameLogFile, onEndCallback) {
         }
 
         function sendToSpectatorsTyped(type, msg) {
-            /*var d = new Date();
-            var n = d.getTime();
-            msg.timeStamp = n;*/
-            /*console.log("sendToSpectatorTyped fired");
-            console.log(msg);*/
             gameLog.push(msg);
             return spectators.map(function (spectator) {
                 return sendToSpectatorTyped(spectator, type, msg);
