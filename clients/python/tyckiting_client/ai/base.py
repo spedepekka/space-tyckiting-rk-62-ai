@@ -97,3 +97,9 @@ class BaseAi:
             points.append(cur)
             cur = self.southeast(cur.x, cur.y)
         return points
+
+    def move_random_max(self, bot):
+            move_pos = random.choice(self.get_valid_edge_moves(bot))
+            return actions.Move(bot_id=bot.bot_id,
+                                x=move_pos[0],
+                                y=move_pos[1])

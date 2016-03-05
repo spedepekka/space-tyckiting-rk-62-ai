@@ -123,13 +123,6 @@ class Ai(base.BaseAi):
                                 x=move_pos.x,
                                 y=move_pos.y)
 
-    def move_random_max(self, bot):
-            move_pos = random.choice(list(self.get_valid_edge_moves(bot)))
-            print "{}".format(move_pos)
-            return actions.Move(bot_id=bot.bot_id,
-                                x=move_pos[0],
-                                y=move_pos[1])
-
     def move_bot(self, bot, x, y):
             return actions.Move(bot_id=bot.bot_id,
                                 x=x,
