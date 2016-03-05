@@ -30,11 +30,13 @@ play() {
   pushd "${DIR}"
   pushd server
   ./run-server.sh > run-server.log 2>run-server.err &
-  sleep 1
+  sleep 0.5
   popd
   pushd ./clients/javascript
   ./mastermind.sh 2>&1 > /dev/null &
-  sleep 1
+  #pushd ./clients/python
+  #activate
+  #./camp.sh 2>&1 > /dev/null &
   popd
   pushd ./clients/python
   activate

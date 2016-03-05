@@ -16,6 +16,7 @@ class BaseAi:
         """
         self.team_id = team_id
         self.config = config or {}
+        self.field_points = None
 
     def move(self, bots, events):
         """
@@ -39,8 +40,13 @@ class BaseAi:
     def get_valid_moves_wo_cur_pos(self, bot):
         return self.get_positions_in_range(x=bot.pos.x, y=bot.pos.y, radius=self.config.move)
 
+    # All moves with max distance (fails when close the field border)
     def get_valid_edge_moves(self, bot):
         return self.get_edge_positions_in_range(x=bot.pos.x, y=bot.pos.y, radius=self.config.move)
+
+    # All moves with max distance (field border fixed)
+    def get_valid_edge_moves_in_field(self, bot):
+        return self.get_edge_positions_in_range_in_field(x=bot.pos.x, y=bot.pos.y, radius=self.config.move, field_radius=self.config.field_radius)
 
     def get_valid_cannons(self, bot):
         return self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius)
@@ -62,6 +68,9 @@ class BaseAi:
     def get_edge_positions_in_range(self, x=0, y=0, radius=1):
         return self.circle(x, y, radius)
 
+    def get_edge_positions_in_range_in_field(self, x=0, y=0, radius=1, field_radius=14):
+        return self.circle_on_field(x, y, radius, field_radius)
+
     def east(self, x=0, y=0, n=1):
         return messages.Pos(x+n, y)
     def southeast(self, x=0, y=0, n=1):
@@ -74,6 +83,13 @@ class BaseAi:
         return messages.Pos(x, y-n)
     def northeast(self, x=0, y=0, n=1):
         return messages.Pos(x+n, y-n)
+
+    def pos_on_field(self, x=0, y=0, field_radius=14):
+        # This is quite heavy operation, all field positions should be calculated only once
+        field_points = self.get_positions_in_range(x=0, y=0, radius=field_radius)
+        if messages.Pos(x,y) in field_points:
+            return True
+        return False
 
     def circle(self, x=0, y=0, radius=1):
         points = []
@@ -98,8 +114,43 @@ class BaseAi:
             cur = self.southeast(cur.x, cur.y)
         return points
 
+    def circle_on_field(self, x=0, y=0, radius=1, field_radius=14):
+        points = []
+        cur = self.east(x, y, radius) # Start point
+        for i in range(radius):
+            if self.pos_on_field(cur.x, cur.y, field_radius):
+                points.append(cur)
+            cur = self.southwest(cur.x, cur.y)
+        for i in range(radius):
+            if self.pos_on_field(cur.x, cur.y, field_radius):
+                points.append(cur)
+            cur = self.west(cur.x, cur.y)
+        for i in range(radius):
+            if self.pos_on_field(cur.x, cur.y, field_radius):
+                points.append(cur)
+            cur = self.northwest(cur.x, cur.y)
+        for i in range(radius):
+            if self.pos_on_field(cur.x, cur.y, field_radius):
+                points.append(cur)
+            cur = self.northeast(cur.x, cur.y)
+        for i in range(radius):
+            if self.pos_on_field(cur.x, cur.y, field_radius):
+                points.append(cur)
+            cur = self.east(cur.x, cur.y)
+        for i in range(radius):
+            if self.pos_on_field(cur.x, cur.y, field_radius):
+                points.append(cur)
+            cur = self.southeast(cur.x, cur.y)
+        return points
+
     def move_random_max(self, bot):
             move_pos = random.choice(self.get_valid_edge_moves(bot))
+            return actions.Move(bot_id=bot.bot_id,
+                                x=move_pos[0],
+                                y=move_pos[1])
+
+    def move_random_max_in_field(self, bot):
+            move_pos = random.choice(self.get_valid_edge_moves_in_field(bot))
             return actions.Move(bot_id=bot.bot_id,
                                 x=move_pos[0],
                                 y=move_pos[1])

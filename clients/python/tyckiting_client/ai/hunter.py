@@ -32,7 +32,7 @@ class Ai(base.BaseAi):
 
         found = False
 
-        #print self.config.__dict__
+        print self.config.__dict__
 
         if len(events) >= 1:
             for e in events:
@@ -94,7 +94,7 @@ class Ai(base.BaseAi):
 
             if bot.detected:
                 print "{} PANIC".format(bot.bot_id)
-                response.append(self.move_random_max(bot))
+                response.append(self.move_random_max_in_field(bot))
                 continue
 
             # TODO: What if only one bot

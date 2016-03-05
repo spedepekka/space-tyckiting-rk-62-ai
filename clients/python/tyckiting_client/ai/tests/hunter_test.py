@@ -94,3 +94,37 @@ class HunterAiTest(unittest.TestCase):
             messages.Pos(x=4, y=0),
         ))
         self.assertEqual(positions, expected_positions)
+
+    def test_pos_on_field(self):
+        fr = 14
+        self.assertTrue(self.ai.pos_on_field(x=0, y=0, field_radius=fr))
+        self.assertTrue(self.ai.pos_on_field(x=1, y=1, field_radius=fr))
+        self.assertTrue(self.ai.pos_on_field(x=-1, y=-1, field_radius=fr))
+        self.assertTrue(self.ai.pos_on_field(x=7, y=7, field_radius=fr))
+        self.assertTrue(self.ai.pos_on_field(x=14, y=0, field_radius=fr))
+        self.assertTrue(self.ai.pos_on_field(x=0, y=14, field_radius=fr))
+        self.assertTrue(self.ai.pos_on_field(x=-14, y=0, field_radius=fr))
+        self.assertTrue(self.ai.pos_on_field(x=0, y=-14, field_radius=fr))
+        self.assertFalse(self.ai.pos_on_field(x=15, y=-8, field_radius=fr))
+        self.assertFalse(self.ai.pos_on_field(x=15, y=0, field_radius=fr))
+        self.assertFalse(self.ai.pos_on_field(x=0, y=15, field_radius=fr))
+        self.assertFalse(self.ai.pos_on_field(x=-15, y=0, field_radius=fr))
+        self.assertFalse(self.ai.pos_on_field(x=0, y=-15, field_radius=fr))
+        self.assertFalse(self.ai.pos_on_field(x=4, y=11, field_radius=fr))
+
+    def test_circle_on_field(self):
+        config = messages.Config(fieldRadius=14)
+        self.ai.config = config
+        positions = set(self.ai.circle_on_field(x=13, y=0, radius=2, field_radius=14))
+        expected_positions = set((
+            messages.Pos(x=14, y=-2),
+            messages.Pos(x=13, y=-2),
+            messages.Pos(x=12, y=-1),
+            messages.Pos(x=11, y=0),
+            messages.Pos(x=11, y=1),
+            messages.Pos(x=11, y=2),
+            messages.Pos(x=12, y=2),
+        ))
+        self.assertEqual(positions, expected_positions)
+
+
