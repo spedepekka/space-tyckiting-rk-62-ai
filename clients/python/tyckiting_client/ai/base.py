@@ -1,4 +1,7 @@
+import random
+
 from tyckiting_client import messages
+from tyckiting_client import actions
 
 
 class BaseAi:
@@ -60,37 +63,37 @@ class BaseAi:
         return self.circle(x, y, radius)
 
     def east(self, x=0, y=0, n=1):
-        return (x+n, y)
+        return messages.Pos(x+n, y)
     def southeast(self, x=0, y=0, n=1):
-        return (x, y+n)
+        return messages.Pos(x, y+n)
     def southwest(self, x=0, y=0, n=1):
-        return (x-n, y+n)
+        return messages.Pos(x-n, y+n)
     def west(self, x=0, y=0, n=1):
-        return (x-n, y)
+        return messages.Pos(x-n, y)
     def northwest(self, x=0, y=0, n=1):
-        return (x, y-n)
+        return messages.Pos(x, y-n)
     def northeast(self, x=0, y=0, n=1):
-        return (x+n, y-n)
+        return messages.Pos(x+n, y-n)
 
     def circle(self, x=0, y=0, radius=1):
         points = []
         cur = self.east(x, y, radius) # Start point
         for i in range(radius):
             points.append(cur)
-            cur = self.southwest(cur[0], cur[1])
+            cur = self.southwest(cur.x, cur.y)
         for i in range(radius):
             points.append(cur)
-            cur = self.west(cur[0], cur[1])
+            cur = self.west(cur.x, cur.y)
         for i in range(radius):
             points.append(cur)
-            cur = self.northwest(cur[0], cur[1])
+            cur = self.northwest(cur.x, cur.y)
         for i in range(radius):
             points.append(cur)
-            cur = self.northeast(cur[0], cur[1])
+            cur = self.northeast(cur.x, cur.y)
         for i in range(radius):
             points.append(cur)
-            cur = self.east(cur[0], cur[1])
+            cur = self.east(cur.x, cur.y)
         for i in range(radius):
             points.append(cur)
-            cur = self.southeast(cur[0], cur[1])
+            cur = self.southeast(cur.x, cur.y)
         return points
