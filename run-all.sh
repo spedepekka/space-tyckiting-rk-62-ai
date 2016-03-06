@@ -29,7 +29,7 @@ activate() {
 play() {
   pushd "${DIR}"
   pushd server
-  node "./start-server.js" -f default-config.json -o true > run-server.log 2>run-server.err &
+  node "./start-server.js" -f default-config.json -o true -l game.json > run-server.log 2>run-server.err &
   sleep 0.5
   popd
   pushd ./clients/javascript
@@ -45,14 +45,23 @@ play() {
   popd
 }
 
+RESULT_FOLDER="results-$(date +"%y%m%y-%H%M%S")"
+mkdir "${RESULT_FOLDER}"
+
 COUNTER=1
 while [  ${COUNTER} -le ${GAMES} ]; do
   echo "GAME ${COUNTER}"
   play
+  GAME_JSON="${RESULT_FOLDER}/game.json"
+  # Get the log
+  mv "${DIR}/server/game.json" "${GAME_JSON}"
+  # Make the json prettier
+  python -m json.tool "${GAME_JSON}" > "${RESULT_FOLDER}/game-${COUNTER}.json"
+  rm "${GAME_JSON}"
   let COUNTER=COUNTER+1 
 done
 
 WON=$(grep "Game ended. You win" "${GAMEERR}" | wc -l)
 PERCENT=$(bc <<< "scale=2; ${WON}/${GAMES}*100")
 
-echo "WON: ${WON} / ${GAMES}, ${PERCENT}"
+echo "WON: ${WON} / ${GAMES}, ${PERCENT}" | tee "${RESULT_FOLDER}/overall.txt"
