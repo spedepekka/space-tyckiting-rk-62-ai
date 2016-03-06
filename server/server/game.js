@@ -31,7 +31,10 @@ function socketSend(socket, type, message) {
     });
 }
 
-function Round(allPlayers, nextStep, loopTime, noWait) {
+function Round(allPlayers, nextStep, loopTime, noWait, roundResponseTimes) {
+    //Take round start time to variable
+    var roundStartTime = new Date().getTime();
+    roundResponseTimes.push({roundStartTime: roundStartTime});
 
     var players = _.where(allPlayers, {active: true}).map(function (player) {
         return player.teamId;
@@ -43,6 +46,9 @@ function Round(allPlayers, nextStep, loopTime, noWait) {
     }, loopTime);
 
     function registerAction(player) {
+        //Take action response time to variable
+        var playerResponseTime = (new Date().getTime() - roundStartTime) + "ms";
+        roundResponseTimes.push({playerID: player.teamId, playerResponseTime})
         actedPlayers.push(player.teamId);
         if (noWait && _.isEmpty(_.difference(players, actedPlayers))) {
             clearTimeout(timeout);
@@ -58,7 +64,8 @@ function Round(allPlayers, nextStep, loopTime, noWait) {
 
     return {
         registerAction: registerAction,
-        clear: clear
+        clear: clear,
+        roundResponseTimes: roundResponseTimes
     };
 }
 
@@ -252,13 +259,15 @@ function Game(config, keepAlive, ws, gameLogFile, onEndCallback) {
 
         function gameLoop(players, bots, asteroids, roundCounter, statistics, loopTime, noWait) {
             // TODO Does the old round need deleting?
+            var roundResponseTimes = [];
             currentRound = new Round(players, function () {
-                innerLoop(players, bots, asteroids, roundCounter, statistics);
-            }, loopTime, noWait);
+                innerLoop(players, bots, asteroids, roundCounter, statistics, roundResponseTimes);
+            }, loopTime, noWait, roundResponseTimes);
         }
 
-        function innerLoop(players, bots, asteroids, roundCounter, statistics) {
+        function innerLoop(players, bots, asteroids, roundCounter, statistics, roundResponseTimes) {
             console.log("Round ", roundCounter);
+            console.log("Round response times", roundResponseTimes);
 
             // update alive
             _.each(bots, function (bot) {
@@ -332,7 +341,8 @@ function Game(config, keepAlive, ws, gameLogFile, onEndCallback) {
                 asteroids,
                 roundCounter,
                 actions,
-                allMessages.filter(function (message) { return message.event !== "end"; }));
+                allMessages.filter(function (message) { return message.event !== "end"; }),
+                roundResponseTimes);
 
             sendToSpectatorsTyped("roundSummary", summaryMessage);
 

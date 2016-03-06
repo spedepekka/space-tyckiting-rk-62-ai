@@ -191,6 +191,17 @@ typify.record("spectatorStart", {
     config: "gameConfig"
 }, true);
 
+typify.record("roundStartTime", {
+    roundStartTime: "number"
+}, true);
+
+typify.record("playerResponseTime", {
+    playerID: "integer",
+    playerResponseTime: "string"
+}, true);
+
+typify.alias("responseTime", "roundStartTime | playerResponseTime");
+
 // Round summary for spectators
 typify.record("roundSummary", {
     type: "'round'",
@@ -199,7 +210,8 @@ typify.record("roundSummary", {
     asteroids: "array position",
     teams: "array team",
     actions: "array action",
-    events: "array event"
+    events: "array event",
+    responseTimes: "array responseTime"
 }, true);
 
 typify.record("endSummary", {
