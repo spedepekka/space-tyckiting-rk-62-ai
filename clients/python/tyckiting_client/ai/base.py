@@ -54,6 +54,9 @@ class BaseAi:
     def get_valid_radars(self, bot):
         return self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius)
 
+    def get_valid_radars_optimal_wall(self, bot):
+        return self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar)
+
     def get_positions_in_range(self, x=0, y=0, radius=1):
         for dx in xrange(-radius, radius+1):
             for dy in xrange(max(-radius, -dx-radius), min(radius, -dx+radius)+1):
@@ -183,6 +186,12 @@ class BaseAi:
 
     def radar_random(self, bot):
             radar_pos = random.choice(list(self.get_valid_radars(bot)))
+            return actions.Radar(bot_id=bot.bot_id,
+                                 x=radar_pos.x,
+                                 y=radar_pos.y)
+
+    def radar_random_optimal_wall(self, bot):
+            radar_pos = random.choice(list(self.get_valid_radars_optimal_wall(bot)))
             return actions.Radar(bot_id=bot.bot_id,
                                  x=radar_pos.x,
                                  y=radar_pos.y)

@@ -100,7 +100,7 @@ class Ai(base.BaseAi):
             # TODO: What if only one bot
 
             if self.mode == "radar":
-                response.append(self.radar_random(bot))
+                response.append(self.radar_random_optimal_wall(bot))
             else: # hunt
                 if i == 1:
                     print "{} radaring".format(bot.bot_id)
