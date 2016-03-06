@@ -87,6 +87,7 @@ class Ai(base.BaseAi):
             if not bot.alive:
                 self.alive_bots += 1
 
+        radarBot = False
         for i, bot in enumerate(bots, start=1):
             # If the bot is dead don't do anything
             if not bot.alive:
@@ -102,7 +103,8 @@ class Ai(base.BaseAi):
             if self.mode == "radar":
                 response.append(self.radar_random_optimal_wall(bot))
             else: # hunt
-                if i == 1:
+                if not radarBot:
+                    radarBot = True
                     print "{} radaring".format(bot.bot_id)
                     response.append(self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y))
                 else:
