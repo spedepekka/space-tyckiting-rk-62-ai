@@ -5,6 +5,7 @@
 # USAGE: <SCRIPT> <NUMBER OF GAMES>
 #
 
+# Number of games to play
 GAMES="${1}"
 if [ -z "${GAMES}" ]; then
   GAMES=1
@@ -26,18 +27,22 @@ activate() {
   source venv/bin/activate
 }
 
+# Single game loop
 play() {
   pushd "${DIR}"
+  # Start server
   pushd server
   node "./start-server.js" -f default-config.json -o true -l game.json > run-server.log 2>run-server.err &
   sleep 0.5
   popd
+  # Start AI 1
   pushd ./clients/javascript
   node "./cli.js" --ai mastermind 2>&1 > /dev/null &
   #pushd ./clients/python
   #activate
   #python "./cli.py" --ai camp --name camp 2>&1 > /dev/null &
   popd
+  # Start AI 2
   pushd ./clients/python
   activate
   python "./cli.py" --ai hunter --name hunter >> "${DIR}/${GAMELOG}" 2>> "${DIR}/${GAMEERR}"
@@ -45,9 +50,11 @@ play() {
   popd
 }
 
+# Save the results
 RESULT_FOLDER="results-$(date +"%y%m%y-%H%M%S")"
 mkdir "${RESULT_FOLDER}"
 
+# Loop the games
 COUNTER=1
 while [  ${COUNTER} -le ${GAMES} ]; do
   echo "GAME ${COUNTER}"
@@ -61,6 +68,7 @@ while [  ${COUNTER} -le ${GAMES} ]; do
   let COUNTER=COUNTER+1 
 done
 
+# Print/save the results
 WON=$(grep "Game ended. You win" "${GAMEERR}" | wc -l)
 PERCENT=$(bc <<< "scale=2; ${WON}/${GAMES}*100")
 
