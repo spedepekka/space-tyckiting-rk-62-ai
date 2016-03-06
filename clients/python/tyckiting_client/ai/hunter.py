@@ -6,6 +6,7 @@ import random
 
 from tyckiting_client.ai import base
 from tyckiting_client import actions
+from tyckiting_client import messages
 
 
 class Ai(base.BaseAi):
@@ -87,6 +88,9 @@ class Ai(base.BaseAi):
             if not bot.alive:
                 self.alive_bots += 1
 
+        radars = []
+        radaring_bot = False
+
         for i, bot in enumerate(bots, start=1):
             # If the bot is dead don't do anything
             if not bot.alive:
@@ -100,9 +104,14 @@ class Ai(base.BaseAi):
             # TODO: What if only one bot
 
             if self.mode == "radar":
-                response.append(self.radar_random_optimal_wall(bot))
+                print "{} radaring".format(bot.bot_id)
+                radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
+                radars.append(messages.Pos(radar_action.x, radar_action.y))
+                response.append(radar_action)
             else: # hunt
-                if i == 1:
+                # One bot always radars
+                if not radaring_bot:
+                    radaring_bot = True
                     print "{} radaring".format(bot.bot_id)
                     response.append(self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y))
                 else:

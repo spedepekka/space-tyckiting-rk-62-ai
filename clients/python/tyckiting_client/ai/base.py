@@ -3,6 +3,8 @@ import random
 from tyckiting_client import messages
 from tyckiting_client import actions
 
+from sets import Set
+
 
 class BaseAi:
 
@@ -56,6 +58,15 @@ class BaseAi:
 
     def get_valid_radars_optimal_wall(self, bot):
         return self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar)
+
+    # radars: list of Pos where already radared
+    def get_valid_radars_optimal_wall_wo_overlap(self, radars):
+        field = Set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar))
+        for r in radars:
+            # self.config.radar*2-1 to avoid overlap
+            dont_radar_here = self.get_positions_in_range(r.x, r.y, self.config.radar*2)
+            field = field - Set(dont_radar_here)
+        return field
 
     def get_positions_in_range(self, x=0, y=0, radius=1):
         for dx in xrange(-radius, radius+1):
@@ -192,6 +203,12 @@ class BaseAi:
 
     def radar_random_optimal_wall(self, bot):
             radar_pos = random.choice(list(self.get_valid_radars_optimal_wall(bot)))
+            return actions.Radar(bot_id=bot.bot_id,
+                                 x=radar_pos.x,
+                                 y=radar_pos.y)
+
+    def radar_random_optimal_wall_wo_overlap(self, bot, radars):
+            radar_pos = random.choice(list(self.get_valid_radars_optimal_wall_wo_overlap(radars)))
             return actions.Radar(bot_id=bot.bot_id,
                                  x=radar_pos.x,
                                  y=radar_pos.y)
