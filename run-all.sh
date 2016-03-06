@@ -59,6 +59,7 @@ COUNTER=1
 while [  ${COUNTER} -le ${GAMES} ]; do
   echo "GAME ${COUNTER}"
   play
+  sleep 0.1
   GAME_JSON="${RESULT_FOLDER}/game.json"
   # Get the log
   mv "${DIR}/server/game.json" "${GAME_JSON}"
