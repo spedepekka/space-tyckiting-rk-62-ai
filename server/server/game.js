@@ -34,7 +34,7 @@ function socketSend(socket, type, message) {
 function Round(allPlayers, nextStep, loopTime, noWait, roundResponseTimes) {
     //Take round start time to variable
     var roundStartTime = new Date().getTime();
-    roundResponseTimes.push({rondStartTime: roundStartTime});
+    roundResponseTimes.push({roundStartTime: roundStartTime});
 
     var players = _.where(allPlayers, {active: true}).map(function (player) {
         return player.teamId;
