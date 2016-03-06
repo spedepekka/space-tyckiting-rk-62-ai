@@ -2,7 +2,7 @@
 #
 # Play hunter vs mastermind many times.
 #
-# USAGE: <SCRIPT> <GAMES>
+# USAGE: <SCRIPT> <NUMBER OF GAMES>
 #
 
 GAMES="${1}"
@@ -29,18 +29,18 @@ activate() {
 play() {
   pushd "${DIR}"
   pushd server
-  ./run-server.sh > run-server.log 2>run-server.err &
+  node "./start-server.js" -f default-config.json -o true > run-server.log 2>run-server.err &
   sleep 0.5
   popd
   pushd ./clients/javascript
-  ./mastermind.sh 2>&1 > /dev/null &
+  node "./cli.js" --ai mastermind 2>&1 > /dev/null &
   #pushd ./clients/python
   #activate
-  #./camp.sh 2>&1 > /dev/null &
+  #python "./cli.py" --ai camp --name camp 2>&1 > /dev/null &
   popd
   pushd ./clients/python
   activate
-  ./hunter.sh >> "${DIR}/${GAMELOG}" 2>> "${DIR}/${GAMEERR}"
+  python "./cli.py" --ai hunter --name hunter >> "${DIR}/${GAMELOG}" 2>> "${DIR}/${GAMEERR}"
   popd
   popd
 }
