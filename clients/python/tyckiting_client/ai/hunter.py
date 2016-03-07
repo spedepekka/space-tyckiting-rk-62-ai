@@ -17,6 +17,7 @@ class Ai(base.BaseAi):
     mode = "radar"
     last_radar_pos = None
     alive_bots = 0
+    triangle_shot = True
 
     def move(self, bots, events):
         """
@@ -90,13 +91,20 @@ class Ai(base.BaseAi):
 
         radars = []
         radaring_bot = False
+        triangle_points = []
+
+        if self.triangle_shot and self.mode != "radar":
+            print "Ready to triangle shot"
+            triangle_points = self.triangle_points(self.last_radar_pos.x, self.last_radar_pos.y)
 
         for i, bot in enumerate(bots, start=1):
+            print "Resolving bot {}".format(bot.bot_id)
             # If the bot is dead don't do anything
             if not bot.alive:
                 continue
 
             if bot.detected:
+                # If the bot is panicking it won't shoot or radar
                 print "{} PANIC".format(bot.bot_id)
                 response.append(self.move_random_max_in_field(bot))
                 continue
@@ -109,14 +117,19 @@ class Ai(base.BaseAi):
                 radars.append(messages.Pos(radar_action.x, radar_action.y))
                 response.append(radar_action)
             else: # hunt
-                # One bot always radars
-                if not radaring_bot:
-                    radaring_bot = True
-                    print "{} radaring".format(bot.bot_id)
-                    response.append(self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y))
+                if self.triangle_shot:
+                    point_to_shoot = triangle_points[i % 3]
+                    print "{} triangle shooting to {}".format(bot.bot_id, point_to_shoot)
+                    response.append(self.cannon(bot, point_to_shoot.x, point_to_shoot.y))
                 else:
-                    print "{} shooting to {}".format(bot.bot_id, self.last_radar_pos)
-                    response.append(self.cannon(bot, self.last_radar_pos.x, self.last_radar_pos.y))
+                    # One bot always radars
+                    if not radaring_bot:
+                        radaring_bot = True
+                        print "{} radaring".format(bot.bot_id)
+                        response.append(self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y))
+                    else:
+                        print "{} shooting to {}".format(bot.bot_id, self.last_radar_pos)
+                        response.append(self.cannon(bot, self.last_radar_pos.x, self.last_radar_pos.y))
 
         return response
 

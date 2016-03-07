@@ -217,3 +217,21 @@ class BaseAi:
             return actions.Radar(bot_id=bot.bot_id,
                                   x=x,
                                   y=y)
+
+    # Return triangle points for shooting
+    def triangle_points(self, x, y, radius=1):
+        points = []
+        # 2 different possibilities, random between them
+        choise = random.randint(1,2)
+        if choise == 1:
+            points.append(self.northeast(x, y, radius))
+            points.append(self.southeast(x, y, radius))
+            points.append(self.west(x, y, radius))
+        elif choise == 2:
+            points.append(self.northwest(x, y, radius))
+            points.append(self.southwest(x, y, radius))
+            points.append(self.east(x, y, radius))
+        else: # Fallback, should never happen, 3 same points to given coordinates
+            for i in range(0,3):
+                points.append(messages.Pos(x,y))
+        return points
