@@ -42,6 +42,10 @@ class Ai(base.BaseAi):
     round_no = -1
     rounds = []
     radar_these = [] # Interesting points to radar
+    expecting_direct_hit = False
+    enemy_can_flank = False
+    enemy_can_flank_counter = 0
+    enemy_can_flank_counter_limit = 3
 
     def get_last_round(self):
         if self.round_no >= 1:
@@ -83,11 +87,13 @@ class Ai(base.BaseAi):
         cur_round.events = events
 
         found = False
+        hit = False
 
         if len(events) >= 1:
             for e in events:
                 if e.event == "hit":
                     print "HIT: Our bot {} hit to bot {}".format(e.source, e.bot_id)
+                    hit = True
                 elif e.event == "die":
                     print "DIE: Bot {} died".format(e.bot_id)
                 elif e.event == "radarEcho":
@@ -101,6 +107,8 @@ class Ai(base.BaseAi):
                         if bot.bot_id == e.bot_id:
                             print "set bot {} as detected".format(bot.bot_id)
                             bot.detected = True
+                        # Hack to radar seen enemies
+                        self.radar_these.append(messages.Pos(e.pos.x, e.pos.y))
                 elif e.event == "detected":
                     print "DETECTED"
                     for bot in bots:
@@ -132,6 +140,15 @@ class Ai(base.BaseAi):
             self.last_radar_pos = None
             self.mode = "radar"
 
+        if self.expecting_direct_hit:
+            if not hit:
+                self.enemy_can_flank_counter += 1
+                if self.enemy_can_flank_counter >= self.enemy_can_flank_counter_limit:
+                    self.enemy_can_flank = True
+            else:
+                self.enemy_can_flank_counter = 0
+                self.expecting_direct_hit = False
+
         # Preparations
         self.alive_bots_no = 0
         self.attacking_bots_no = 0
@@ -162,6 +179,7 @@ class Ai(base.BaseAi):
                         print "{} radaring".format(bot.bot_id)
                         radar_action = None
                         if len(self.radar_these) > 0:
+                            print "POP: {}".format(self.radar_these)
                             radar_pos = self.radar_these.pop(0) # FIFO
                             radar_action = actions.Radar(bot_id=bot.bot_id, x=radar_pos.x, y=radar_pos.y)
                         else:
@@ -170,13 +188,17 @@ class Ai(base.BaseAi):
                         response.append(radar_action)
                         bot.radar = messages.Pos(radar_action.x, radar_action.y)
                     else: # hunt
-                        if self.attacking_bots_no == 3:
+                        if self.attacking_bots_no == 3 or self.enemy_can_flank:
                             if len(triangle_points) == 0:
-                                triangle_points = self.triangle_points(self.last_radar_pos.x, self.last_radar_pos.y)
+                                if self.enemy_can_flank and self.attacking_bots_no != 3:
+                                    triangle_points = self.triangle_points(self.last_radar_pos.x, self.last_radar_pos.y, radius=2) # Bigger radius for flanking enemy and when not able to shoot full triangle
+                                else:
+                                    triangle_points = self.triangle_points(self.last_radar_pos.x, self.last_radar_pos.y)
                             point_to_shoot = triangle_points[i % 3]
                             print "{} triangle shooting to {}".format(bot.bot_id, point_to_shoot)
                             bot.shoot = point_to_shoot
                             cur_round.triangle_shot = messages.Pos(self.last_radar_pos.x, self.last_radar_pos.y)
+                            # BUG: This will add same values multiple times
                             self.radar_these.append(messages.Pos(self.last_radar_pos.x, self.last_radar_pos.y))
                             response.append(self.cannon(bot, point_to_shoot.x, point_to_shoot.y))
                         else: # Direct shot
@@ -188,6 +210,7 @@ class Ai(base.BaseAi):
                                 response.append(radar_pos)
                                 bot.radar = messages.Pos(radar_pos.x, radar_pos.y)
                             else:
+                                self.expecting_direct_hit = True
                                 print "{} shooting to {}".format(bot.bot_id, self.last_radar_pos)
                                 cannon_pos = self.cannon(bot, self.last_radar_pos.x, self.last_radar_pos.y)
                                 response.append(cannon_pos)
