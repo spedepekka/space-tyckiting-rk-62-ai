@@ -35,6 +35,7 @@ play() {
   # Start server
   pushd server
   node "./start-server.js" -f default-config.json -o false -d 1000 -l game.json > run-server.log 2>run-server.err &
+  #node "./start-server.js" -f asteroid-default-config.json -o false -d 1000 -l game.json > run-server.log 2>run-server.err &
   sleep 0.6
   popd
   # Start AI 1

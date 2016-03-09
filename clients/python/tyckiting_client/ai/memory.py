@@ -3,22 +3,29 @@ Hunter AI
 """
 
 import random
+import copy
 
 from tyckiting_client.ai import base
 from tyckiting_client import actions
 from tyckiting_client import messages
 
-class BotStatus:
-    detected = False
-
-class Round:
-
+class Round(object):
     round_no = 0
     events = []
-    bot_status = []
+    bots = []
 
     def __init__(self, round_no):
         self.round_no = round_no
+        self.events = []
+        self.bots = []
+
+    def print_bots(self):
+        for bot in self.bots:
+            print "Bot: {}".format(bot.__dict__)
+
+    def print_events(self):
+        for e in self.events:
+            print "Event: {}".format(e.__dict__)
 
 class Ai(base.BaseAi):
     """
@@ -30,6 +37,11 @@ class Ai(base.BaseAi):
     alive_bots = 0
     game_config_printed = False
     round_no = -1
+    rounds = []
+
+    def get_last_round(self):
+        if self.round_no >= 1:
+            return rounds[-1]
 
     def print_game_config(self):
         """
@@ -64,15 +76,16 @@ class Ai(base.BaseAi):
         
         self.round_no += 1
         cur_round = Round(self.round_no)
+        cur_round.events = events
 
         found = False
 
         if len(events) >= 1:
             for e in events:
                 if e.event == "hit":
-                    print "HIT"
+                    print "HIT: Our bot {} hit to bot {}".format(e.source, e.bot_id)
                 elif e.event == "die":
-                    print "DIE"
+                    print "DIE: Bot {} died".format(e.bot_id)
                 elif e.event == "radarEcho":
                     print "RADARECHO"
                     self.last_radar_pos = e.pos
@@ -126,33 +139,42 @@ class Ai(base.BaseAi):
 
         for i, bot in enumerate(bots, start=1):
             # If the bot is dead don't do anything
-            if not bot.alive:
-                continue
+            if bot.alive:
+                if bot.detected:
+                    print "{} PANIC".format(bot.bot_id)
+                    move_pos = self.move_random_max_in_field(bot)
+                    response.append(move_pos)
+                    bot.move(move_pos.x, move_pos.y)
+                    continue
 
-            if bot.detected:
-                print "{} PANIC".format(bot.bot_id)
-                response.append(self.move_random_max_in_field(bot))
-                continue
+                # TODO: What if only one bot
 
-            # TODO: What if only one bot
-
-            if self.mode == "radar":
-                print "{} radaring".format(bot.bot_id)
-                radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
-                radars.append(messages.Pos(radar_action.x, radar_action.y))
-                response.append(radar_action)
-            else: # hunt
-                # One bot always radars
-                if not radaring_bot:
-                    radaring_bot = True
+                if self.mode == "radar":
                     print "{} radaring".format(bot.bot_id)
-                    response.append(self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y))
-                else:
-                    print "{} shooting to {}".format(bot.bot_id, self.last_radar_pos)
-                    response.append(self.cannon(bot, self.last_radar_pos.x, self.last_radar_pos.y))
+                    radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
+                    radars.append(messages.Pos(radar_action.x, radar_action.y))
+                    response.append(radar_action)
+                    bot.radar = messages.Pos(radar_action.x, radar_action.y)
+                else: # hunt
+                    # One bot always radars
+                    if not radaring_bot:
+                        radaring_bot = True
+                        print "{} radaring".format(bot.bot_id)
+                        radar_pos = self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y)
+                        response.append(radar_pos)
+                        bot.radar = messages.Pos(radar_pos.x, radar_pos.y)
+                    else:
+                        print "{} shooting to {}".format(bot.bot_id, self.last_radar_pos)
+                        cannon_pos = self.cannon(bot, self.last_radar_pos.x, self.last_radar_pos.y)
+                        response.append(cannon_pos)
+                        bot.shoot = messages.Pos(cannon_pos.x, cannon_pos.y)
 
-        print "Round {} actions ans stuff".format(self.round_no)
+            cur_round.bots.append(bot)
+
+        print "Round {} actions and stuff".format(self.round_no)
         print cur_round.__dict__
+        cur_round.print_bots()
+        self.rounds.append(cur_round)
 
         return response
 

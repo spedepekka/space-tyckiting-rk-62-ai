@@ -32,7 +32,11 @@ class Bot(object):
         self.pos = Pos(**pos) if pos else None
         self.hp = hp
 
+        # Own stuff
         self.detected = False
+        self.shoot = None
+        self.radar = None
+        self.move = None
 
 class Team(object):
     def __init__(self, name, teamId, bots=None, **kwargs):
