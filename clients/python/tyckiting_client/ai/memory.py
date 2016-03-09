@@ -34,7 +34,8 @@ class Ai(base.BaseAi):
 
     mode = "radar"
     last_radar_pos = None
-    alive_bots = 0
+    alive_bots_no = 0
+    attacking_bots_no = 0
     game_config_printed = False
     round_no = -1
     rounds = []
@@ -128,11 +129,17 @@ class Ai(base.BaseAi):
             self.last_radar_pos = None
             self.mode = "radar"
 
-        self.alive_bots = 0
+        # Preparations
+        self.alive_bots_no = 0
+        self.attacking_bots_no = 0
         for i, bot in enumerate(bots):
             print "Bot: {}".format(bot.__dict__)
-            if not bot.alive:
-                self.alive_bots += 1
+            if bot.alive:
+                self.alive_bots_no += 1
+            if not bot.detected:
+                self.attacking_bots_no += 1
+
+        print "{} bots alive and {} will attack".format(self.alive_bots_no, self.attacking_bots_no)
 
         radars = []
         radaring_bot = False
