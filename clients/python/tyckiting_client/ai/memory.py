@@ -13,11 +13,13 @@ class Round(object):
     round_no = 0
     events = []
     bots = []
+    triangle_shot = None # Middle point of triangle if shot
 
     def __init__(self, round_no):
         self.round_no = round_no
         self.events = []
         self.bots = []
+        self.triangle_shot = None
 
     def print_bots(self):
         for bot in self.bots:
@@ -39,6 +41,7 @@ class Ai(base.BaseAi):
     game_config_printed = False
     round_no = -1
     rounds = []
+    radar_these = [] # Interesting points to radar
 
     def get_last_round(self):
         if self.round_no >= 1:
@@ -136,45 +139,59 @@ class Ai(base.BaseAi):
             print "Bot: {}".format(bot.__dict__)
             if bot.alive:
                 self.alive_bots_no += 1
-            if not bot.detected:
-                self.attacking_bots_no += 1
+                if not bot.detected:
+                    self.attacking_bots_no += 1
 
         print "{} bots alive and {} will attack".format(self.alive_bots_no, self.attacking_bots_no)
 
         radars = []
         radaring_bot = False
+        triangle_points = []
 
         for i, bot in enumerate(bots, start=1):
             # If the bot is dead don't do anything
             if bot.alive:
+                # Always flank first
                 if bot.detected:
                     print "{} PANIC".format(bot.bot_id)
                     move_pos = self.move_random_max_in_field(bot)
                     response.append(move_pos)
-                    bot.move(move_pos.x, move_pos.y)
-                    continue
-
-                # TODO: What if only one bot
-
-                if self.mode == "radar":
-                    print "{} radaring".format(bot.bot_id)
-                    radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
-                    radars.append(messages.Pos(radar_action.x, radar_action.y))
-                    response.append(radar_action)
-                    bot.radar = messages.Pos(radar_action.x, radar_action.y)
-                else: # hunt
-                    # One bot always radars
-                    if not radaring_bot:
-                        radaring_bot = True
+                    bot.move = messages.Pos(move_pos.x, move_pos.y)
+                else:
+                    if self.mode == "radar":
                         print "{} radaring".format(bot.bot_id)
-                        radar_pos = self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y)
-                        response.append(radar_pos)
-                        bot.radar = messages.Pos(radar_pos.x, radar_pos.y)
-                    else:
-                        print "{} shooting to {}".format(bot.bot_id, self.last_radar_pos)
-                        cannon_pos = self.cannon(bot, self.last_radar_pos.x, self.last_radar_pos.y)
-                        response.append(cannon_pos)
-                        bot.shoot = messages.Pos(cannon_pos.x, cannon_pos.y)
+                        radar_action = None
+                        if len(self.radar_these) > 0:
+                            radar_pos = self.radar_these.pop(0) # FIFO
+                            radar_action = actions.Radar(bot_id=bot.bot_id, x=radar_pos.x, y=radar_pos.y)
+                        else:
+                            radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
+                        radars.append(messages.Pos(radar_action.x, radar_action.y))
+                        response.append(radar_action)
+                        bot.radar = messages.Pos(radar_action.x, radar_action.y)
+                    else: # hunt
+                        if self.attacking_bots_no == 3:
+                            if len(triangle_points) == 0:
+                                triangle_points = self.triangle_points(self.last_radar_pos.x, self.last_radar_pos.y)
+                            point_to_shoot = triangle_points[i % 3]
+                            print "{} triangle shooting to {}".format(bot.bot_id, point_to_shoot)
+                            bot.shoot = point_to_shoot
+                            cur_round.triangle_shot = messages.Pos(self.last_radar_pos.x, self.last_radar_pos.y)
+                            self.radar_these.append(messages.Pos(self.last_radar_pos.x, self.last_radar_pos.y))
+                            response.append(self.cannon(bot, point_to_shoot.x, point_to_shoot.y))
+                        else: # Direct shot
+                            # One bot always radars
+                            if not radaring_bot:
+                                radaring_bot = True
+                                print "{} radaring".format(bot.bot_id)
+                                radar_pos = self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y)
+                                response.append(radar_pos)
+                                bot.radar = messages.Pos(radar_pos.x, radar_pos.y)
+                            else:
+                                print "{} shooting to {}".format(bot.bot_id, self.last_radar_pos)
+                                cannon_pos = self.cannon(bot, self.last_radar_pos.x, self.last_radar_pos.y)
+                                response.append(cannon_pos)
+                                bot.shoot = messages.Pos(cannon_pos.x, cannon_pos.y)
 
             cur_round.bots.append(bot)
 

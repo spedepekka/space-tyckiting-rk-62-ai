@@ -127,4 +127,3 @@ class HunterAiTest(unittest.TestCase):
         ))
         self.assertEqual(positions, expected_positions)
 
-
