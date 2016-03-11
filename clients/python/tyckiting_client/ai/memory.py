@@ -198,8 +198,9 @@ class Ai(base.BaseAi):
                             print "{} triangle shooting to {}".format(bot.bot_id, point_to_shoot)
                             bot.shoot = point_to_shoot
                             cur_round.triangle_shot = messages.Pos(self.last_radar_pos.x, self.last_radar_pos.y)
-                            # BUG: This will add same values multiple times
-                            self.radar_these.append(messages.Pos(self.last_radar_pos.x, self.last_radar_pos.y))
+                            radar_this = messages.Pos(self.last_radar_pos.x, self.last_radar_pos.y)
+                            if radar_this not in self.radar_these:
+                                self.radar_these.append(radar_this)
                             response.append(self.cannon(bot, point_to_shoot.x, point_to_shoot.y))
                         else: # Direct shot
                             # One bot always radars
