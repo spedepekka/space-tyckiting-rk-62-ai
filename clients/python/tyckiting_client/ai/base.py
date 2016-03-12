@@ -17,7 +17,7 @@ class BaseAi:
             config: Dictionary of game parameters
         """
         self.team_id = team_id
-        self.config = config or {}
+        self.config = config #or {}
         self.field_points = None
         self.print_game_config()
 
