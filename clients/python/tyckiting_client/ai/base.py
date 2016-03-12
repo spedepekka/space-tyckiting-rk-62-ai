@@ -21,7 +21,7 @@ class BaseAi:
         self.field_points = None
         self.print_game_config()
 
-        # Calculater all the field points for later use
+        # Calculate all the field points for later use
         self.field_points = Set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius))
 
     def print_game_config(self):
@@ -84,7 +84,7 @@ class BaseAi:
     def get_valid_radars_optimal_wall_wo_overlap(self, radars):
         field = Set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar))
         for r in radars:
-            # self.config.radar*2-1 to avoid overlap
+            # self.config.radar*2 to avoid overlap
             dont_radar_here = self.get_positions_in_range(r.x, r.y, self.config.radar*2)
             field = field - Set(dont_radar_here)
         return field
