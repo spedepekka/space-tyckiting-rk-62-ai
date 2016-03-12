@@ -18,7 +18,6 @@ class BaseAi:
         """
         self.team_id = team_id
         self.config = config #or {}
-        self.field_points = None
         self.print_game_config()
 
         # Calculate all the field points for later use
