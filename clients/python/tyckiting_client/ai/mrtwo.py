@@ -1,5 +1,5 @@
 """
-Hunter AI
+The one after memory with better memory, lol
 """
 
 import random

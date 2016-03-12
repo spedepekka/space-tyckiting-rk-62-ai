@@ -1,5 +1,5 @@
 """
-Hunter AI
+The one after hunter with some memory
 """
 
 import random
