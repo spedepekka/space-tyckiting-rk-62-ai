@@ -173,7 +173,7 @@ class Ai(base.BaseAi):
                         if self.attacking_bots_no == 3 or self.enemy_can_flank:
                             if len(triangle_points) == 0:
                                 if self.enemy_can_flank and self.attacking_bots_no != 3:
-                                    triangle_points = self.triangle_points(self.last_radar_pos.x, self.last_radar_pos.y, radius=2) # Bigger radius for flanking enemy and when not able to shoot full triangle
+                                    triangle_points = self.triangle_points(self.last_radar_pos.x, self.last_radar_pos.y, radius=1)
                                 else:
                                     triangle_points = self.triangle_points(self.last_radar_pos.x, self.last_radar_pos.y)
                             point_to_shoot = triangle_points[i % 3]
