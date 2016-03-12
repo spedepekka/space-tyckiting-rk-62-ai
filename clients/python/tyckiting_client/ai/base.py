@@ -3,8 +3,6 @@ import random
 from tyckiting_client import messages
 from tyckiting_client import actions
 
-from sets import Set
-
 
 class BaseAi:
 
@@ -21,7 +19,9 @@ class BaseAi:
         self.print_game_config()
 
         # Calculate all the field points for later use
-        self.field_points = Set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius))
+        self.field_points = set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius))
+        # Calculate all the radar points for later use
+        self.optimal_radar_points = set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar))
 
     def print_game_config(self):
         """
@@ -77,15 +77,15 @@ class BaseAi:
         return self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius)
 
     def get_valid_radars_optimal_wall(self, bot):
-        return self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar)
+        return self.optimal_radar_points
 
     # radars: list of Pos where already radared
     def get_valid_radars_optimal_wall_wo_overlap(self, radars):
-        field = Set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar))
+        field = self.optimal_radar_points
         for r in radars:
             # self.config.radar*2 to avoid overlap
             dont_radar_here = self.get_positions_in_range(r.x, r.y, self.config.radar*2)
-            field = field - Set(dont_radar_here)
+            field = field - set(dont_radar_here)
         return field
 
     def get_positions_in_range(self, x=0, y=0, radius=1):
