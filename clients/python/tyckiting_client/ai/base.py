@@ -21,6 +21,9 @@ class BaseAi:
         self.field_points = None
         self.print_game_config()
 
+        # Calculater all the field points for later use
+        self.field_points = Set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius))
+
     def print_game_config(self):
         """
         'field_radius': 14,
@@ -117,9 +120,7 @@ class BaseAi:
         return messages.Pos(x+n, y-n)
 
     def pos_on_field(self, x=0, y=0, field_radius=14):
-        # This is quite heavy operation, all field positions should be calculated only once
-        field_points = self.get_positions_in_range(x=0, y=0, radius=field_radius)
-        if messages.Pos(x,y) in field_points:
+        if messages.Pos(x,y) in self.field_points:
             return True
         return False
 
