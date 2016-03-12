@@ -44,7 +44,6 @@ class Ai(base.BaseAi):
     last_radar_pos = None
     alive_bots_no = 0
     attacking_bots_no = 0
-    game_config_printed = False
     round_no = -1
     rounds = []
     radar_these = [] # Interesting points to radar
@@ -67,22 +66,6 @@ class Ai(base.BaseAi):
         else:
             print "NOT added"
 
-    def print_game_config(self):
-        """
-        'field_radius': 14,
-        'loop_time': 1000,
-        'cannon': 1,
-        'move': 2,
-        'max_count': 200,
-        'radar': 3, 'see': 2,
-        'bots': 3,
-        'start_hp': 10}
-        """
-        if not self.game_config_printed:
-            print "Game config"
-            print self.config.__dict__
-        self.game_config_printed = True
-
     def move(self, bots, events):
         """
         Move the bot to a random legal positon.
@@ -94,7 +77,6 @@ class Ai(base.BaseAi):
         Returns:
             List of actions to perform this round.
         """
-        self.print_game_config()
 
         response = []
         

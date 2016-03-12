@@ -19,6 +19,24 @@ class BaseAi:
         self.team_id = team_id
         self.config = config or {}
         self.field_points = None
+        self.print_game_config()
+
+    def print_game_config(self):
+        """
+        'field_radius': 14,
+        'loop_time': 1000,
+        'cannon': 1,
+        'move': 2,
+        'max_count': 200,
+        'radar': 3, 'see': 2,
+        'bots': 3,
+        'start_hp': 10}
+        """
+        if self.config is not None:
+            print "Game config"
+            print self.config.__dict__
+        else:
+            print "Coulg not print game config, because it is None"
 
     def move(self, bots, events):
         """

@@ -34,8 +34,6 @@ class Ai(base.BaseAi):
 
         found = False
 
-        print self.config.__dict__
-
         if len(events) >= 1:
             for e in events:
                 if e.event == "hit":
