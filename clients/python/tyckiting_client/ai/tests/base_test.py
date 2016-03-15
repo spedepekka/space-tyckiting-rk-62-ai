@@ -9,7 +9,8 @@ from mock import patch
 class BaseAiTest(unittest.TestCase):
 
     def setUp(self):
-        self.ai = base.BaseAi(1)
+        config = messages.Config(radius=14)
+        self.ai = base.BaseAi(1, config)
 
     def test_get_positions_in_origo_range(self):
         positions = set(self.ai.get_positions_in_range(x=0, y=0, radius=1))

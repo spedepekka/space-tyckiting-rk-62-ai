@@ -9,7 +9,8 @@ from mock import patch
 class HunterAiTest(unittest.TestCase):
 
     def setUp(self):
-        self.ai = hunter.Ai(1)
+        config = messages.Config(radius=14)
+        self.ai = hunter.Ai(1, config)
 
     """
     def test_get_edge_positions_in_range_1(self):
@@ -115,8 +116,6 @@ class HunterAiTest(unittest.TestCase):
         self.assertFalse(self.ai.pos_on_field(x=4, y=11, field_radius=fr))
 
     def test_circle_on_field(self):
-        config = messages.Config(fieldRadius=14)
-        self.ai.config = config
         positions = set(self.ai.circle_on_field(x=13, y=0, radius=2, field_radius=14))
         expected_positions = set((
             messages.Pos(x=14, y=-2),
