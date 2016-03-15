@@ -253,3 +253,65 @@ class BaseAi:
             for i in range(0,3):
                 points.append(messages.Pos(x,y))
         return points
+
+    def optimal_radar_first(self, x, y, radar=3):
+        point = self.northwest(x, y, radar)
+        point = self.northeast(point.x, point.y, radar-1)
+        return point
+
+    def optimal_radar_second(self, x, y, radar=3):
+        point = self.northeast(x, y, radar)
+        point = self.east(point.x, point.y, radar-1)
+        return point
+
+    def optimal_radar_third(self, x, y, radar=3):
+        point = self.east(x, y, radar)
+        point = self.southeast(point.x, point.y, radar-1)
+        return point
+
+    def optimal_radar_fourth(self, x, y, radar=3):
+        point = self.southeast(x, y, radar)
+        point = self.southwest(point.x, point.y, radar-1)
+        return point
+
+    def optimal_radar_fifth(self, x, y, radar=3):
+        point = self.southwest(x, y, radar)
+        point = self.west(point.x, point.y, radar-1)
+        return point
+
+    def optimal_radar_sixth(self, x, y, radar=3):
+        point = self.west(x, y, radar)
+        point = self.northwest(point.x, point.y, radar-1)
+        return point
+
+    # Returns the six optimal radar points around the given point
+    # radar = the radius of the radar
+    def optimal_radar_around(self, x, y, radar=3):
+        points = []
+        points.append(self.optimal_radar_first(x, y, radar))
+        points.append(self.optimal_radar_second(x, y, radar))
+        points.append(self.optimal_radar_third(x, y, radar))
+        points.append(self.optimal_radar_fourth(x, y, radar))
+        points.append(self.optimal_radar_fifth(x, y, radar))
+        points.append(self.optimal_radar_sixth(x, y, radar))
+        return points
+
+    def optimal_radars_on_field(self, radar=3):
+        # start from origo
+        points_to_check = set([messages.Pos(0,0)])
+        checked_points = set([])
+        looper = 0
+        while len(points_to_check) >= 1:
+            looper += 1
+            if looper >= 50:
+                break
+            p = points_to_check.pop()
+
+            new_points = set(self.optimal_radar_around(p.x, p.y, radar))
+            # new points must be in the field
+            new_points &= self.field_points
+            # new points cannot be already checked points
+            new_points -= checked_points
+            points_to_check |= new_points
+            checked_points.add(p)
+        return checked_points
