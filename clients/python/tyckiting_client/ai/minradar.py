@@ -197,7 +197,15 @@ class Ai(base.BaseAi):
                             radar_pos = self.radar_these.pop(0) # FIFO
                             radar_action = actions.Radar(bot_id=bot.bot_id, x=radar_pos.x, y=radar_pos.y)
                         else:
-                            radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
+                            # Go through the minimum number of optimal radars at first (Lasse's radar)
+                            if len(self.min_optimal_radars) >= 1:
+                                min_point = self.min_optimal_radars.pop()
+                                print "Pop min radar point {} number of points left {}".format(min_point, len(self.min_optimal_radars))
+                                radar_action = actions.Radar(bot_id=bot.bot_id, x=min_point.x, y=min_point.y)
+                            # Then start radaring on random
+                            else:
+                                radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
+                                print "Random no overlap radar to {},{}".format(radar_action.x, radar_action.y)
                         radars.append(messages.Pos(radar_action.x, radar_action.y))
                         response.append(radar_action)
                         bot.radar = messages.Pos(radar_action.x, radar_action.y)

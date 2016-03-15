@@ -23,6 +23,9 @@ class BaseAi:
         # Calculate all the radar points for later use
         self.optimal_radar_points = set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar))
 
+        # Calculate minimum number of radars on the field
+        self.min_optimal_radars = self.optimal_radars_on_field(radar=self.config.radar)
+
     def print_game_config(self):
         """
         'field_radius': 14,
@@ -254,39 +257,39 @@ class BaseAi:
                 points.append(messages.Pos(x,y))
         return points
 
-    def optimal_radar_first(self, x, y, radar=3):
-        point = self.northwest(x, y, radar)
-        point = self.northeast(point.x, point.y, radar-1)
+    def optimal_radar_first(self, x, y, radar=4):
+        point = self.northwest(x, y, radar+1)
+        point = self.northeast(point.x, point.y, radar)
         return point
 
-    def optimal_radar_second(self, x, y, radar=3):
-        point = self.northeast(x, y, radar)
-        point = self.east(point.x, point.y, radar-1)
+    def optimal_radar_second(self, x, y, radar=4):
+        point = self.northeast(x, y, radar+1)
+        point = self.east(point.x, point.y, radar)
         return point
 
-    def optimal_radar_third(self, x, y, radar=3):
-        point = self.east(x, y, radar)
-        point = self.southeast(point.x, point.y, radar-1)
+    def optimal_radar_third(self, x, y, radar=4):
+        point = self.east(x, y, radar+1)
+        point = self.southeast(point.x, point.y, radar)
         return point
 
-    def optimal_radar_fourth(self, x, y, radar=3):
-        point = self.southeast(x, y, radar)
-        point = self.southwest(point.x, point.y, radar-1)
+    def optimal_radar_fourth(self, x, y, radar=4):
+        point = self.southeast(x, y, radar+1)
+        point = self.southwest(point.x, point.y, radar)
         return point
 
-    def optimal_radar_fifth(self, x, y, radar=3):
-        point = self.southwest(x, y, radar)
-        point = self.west(point.x, point.y, radar-1)
+    def optimal_radar_fifth(self, x, y, radar=4):
+        point = self.southwest(x, y, radar+1)
+        point = self.west(point.x, point.y, radar)
         return point
 
-    def optimal_radar_sixth(self, x, y, radar=3):
-        point = self.west(x, y, radar)
-        point = self.northwest(point.x, point.y, radar-1)
+    def optimal_radar_sixth(self, x, y, radar=4):
+        point = self.west(x, y, radar+1)
+        point = self.northwest(point.x, point.y, radar)
         return point
 
     # Returns the six optimal radar points around the given point
     # radar = the radius of the radar
-    def optimal_radar_around(self, x, y, radar=3):
+    def optimal_radar_around(self, x, y, radar=4):
         points = []
         points.append(self.optimal_radar_first(x, y, radar))
         points.append(self.optimal_radar_second(x, y, radar))
@@ -296,7 +299,7 @@ class BaseAi:
         points.append(self.optimal_radar_sixth(x, y, radar))
         return points
 
-    def optimal_radars_on_field(self, radar=3):
+    def optimal_radars_on_field(self, radar=4):
         # start from origo
         points_to_check = set([messages.Pos(0,0)])
         checked_points = set([])
@@ -314,4 +317,5 @@ class BaseAi:
             new_points -= checked_points
             points_to_check |= new_points
             checked_points.add(p)
+        print "AAA LEN {}\n{}".format(len(checked_points),checked_points)
         return checked_points
