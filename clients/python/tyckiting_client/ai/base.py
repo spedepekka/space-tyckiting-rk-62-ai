@@ -38,7 +38,7 @@ class BaseAi:
             print "Game config"
             print self.config.__dict__
         else:
-            print "Coulg not print game config, because it is None"
+            print "Could not print game config, because it is None"
 
     def move(self, bots, events):
         """
