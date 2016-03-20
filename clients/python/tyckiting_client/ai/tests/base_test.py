@@ -115,3 +115,18 @@ class BaseAiTest(unittest.TestCase):
         ))
         self.assertEqual(positions, expected_positions)
     """
+
+    def test_increase_jradar_values(self):
+        self.ai.increase_jradar_values()
+        self.ai.jradar_values[messages.Pos(1,1)] = 25
+        self.ai.jradar_values[messages.Pos(0,0)] = 10
+        self.ai.increase_jradar_values()
+        self.ai.increase_jradar_values()
+        for key, value in self.ai.jradar_values.items():
+            if key == messages.Pos(1,1):
+                self.assertEqual(value, 27)
+            elif key == messages.Pos(0,0):
+                self.assertEqual(value, 12)
+            else:
+                self.assertEqual(value, 4)
+        self.assertEqual(self.ai.get_biggest_jradar()[1], 27)

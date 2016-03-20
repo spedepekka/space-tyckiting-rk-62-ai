@@ -3,6 +3,8 @@ import random
 from tyckiting_client import messages
 from tyckiting_client import actions
 
+from collections import Counter
+
 
 class BaseAi:
 
@@ -23,8 +25,24 @@ class BaseAi:
         # Calculate all the radar points for later use
         self.optimal_radar_points = set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius-self.config.radar))
 
-        # Calculate minimum number of radars on the field
+        # Calculate minimum number of radars on the field (Lasse radar)
         self.min_optimal_radars = self.optimal_radars_on_field(radar=self.config.radar)
+
+        # Field point radar values (Jarno radar)
+        self.jradar_values = Counter()
+        for point in self.field_points:
+            self.jradar_values.update({point: 1}) # Fill with coordinates and give initial value 1
+
+    def increase_jradar_values(self):
+        for key, value in self.jradar_values.items():
+            self.jradar_values[key] = value + 1
+
+    def get_biggest_jradar(self):
+        biggest = None
+        for key, value in self.jradar_values.items():
+            if biggest is None or value > biggest[1]:
+                biggest = (key, value)
+        return biggest
 
     def print_game_config(self):
         """
