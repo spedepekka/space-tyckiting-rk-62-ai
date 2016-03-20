@@ -335,5 +335,4 @@ class BaseAi:
             new_points -= checked_points
             points_to_check |= new_points
             checked_points.add(p)
-        print "AAA LEN {}\n{}".format(len(checked_points),checked_points)
         return checked_points
