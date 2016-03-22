@@ -80,6 +80,7 @@ class Ai(base.BaseAi):
         """
 
         response = []
+        killed_someone = False
         
         self.round_no += 1
         cur_round = Round(self.round_no)
@@ -111,6 +112,8 @@ class Ai(base.BaseAi):
                         print "Friendlyfire: Bot {} shot bot {}".format(e.source, e.bot_id)
                 elif e.event == "die":
                     print "DIE: Bot {} died".format(e.bot_id)
+                    if e.bot_id not in my_bot_ids:
+                        killed_someone = True
                 elif e.event == "radarEcho":
                     print "RADARECHO {}".format(e.pos)
                     self.last_radar_pos = e.pos
@@ -151,6 +154,11 @@ class Ai(base.BaseAi):
             if not found:
                 self.last_radar_pos = None
                 self.mode = "radar"
+        elif self.get_last_round().triangle_shot is not None and not killed_someone:
+            self.triangle_missed = True
+            self.mode = "hunt"
+            found = True
+            self.last_radar_pos = self.get_last_round().triangle_shot
         else:
             self.last_radar_pos = None
             self.mode = "radar"
@@ -195,7 +203,7 @@ class Ai(base.BaseAi):
                     response.append(move_pos)
                     bot.move = messages.Pos(move_pos.x, move_pos.y)
                 else:
-                    if self.mode == "radar":
+                    if self.mode == "radar" or killed_someone:
                         print "     {} radaring".format(bot.bot_id)
                         radar_action = None
                         if len(self.radar_these) > 0:

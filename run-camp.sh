@@ -41,9 +41,9 @@ play() {
   pushd "${DIR}"
   # Start server
   pushd server
-  node "./start-server.js" -f default-config.json -o false -d 1000 -l game.json > run-server.log 2>run-server.err &
+  #node "./start-server.js" -f default-config.json -o false -d 1000 -l game.json > run-server.log 2>run-server.err &
   #node "./start-server.js" -f default-config.json -o false -l game.json > run-server.log 2>run-server.err &
-  #node "./start-server.js" -f default-config.json -o true -l game.json > run-server.log 2>run-server.err &
+  node "./start-server.js" -f default-config.json -o true -l game.json > run-server.log 2>run-server.err &
   #node "./start-server.js" -f asteroid-default-config.json -o false -d 1000 -l game.json > run-server.log 2>run-server.err &
   sleep 1
   popd
@@ -53,10 +53,10 @@ play() {
   pushd ./clients/python
   activate
   #python "./cli.py" --ai camp --name camp 2>&1 > /dev/null &
-  python "./cli.py" --ai dummy --name dummy 2>&1 > /dev/null &
+  #python "./cli.py" --ai dummy --name dummy 2>&1 > /dev/null &
   #python "./cli.py" --ai hunter --name hunter 2>&1 > /dev/null &
   #python "./cli.py" --ai memory --name memory 2>&1 > /dev/null &
-  #python "./cli.py" --ai goodradar --name goodradar 2>&1 > /dev/null &
+  python "./cli.py" --ai goodradar --name goodradar 2>&1 > /dev/null &
   popd
   # Start AI 2
   pushd ./clients/python
