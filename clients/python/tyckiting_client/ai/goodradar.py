@@ -205,8 +205,10 @@ class Ai(base.BaseAi):
                                 radar_action = actions.Radar(bot_id=bot.bot_id, x=min_point.x, y=min_point.y)
                             # Then start radaring on random
                             else:
-                                radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
-                                print "Random no overlap radar to {},{}".format(radar_action.x, radar_action.y)
+                                #radar_action = self.radar_random_optimal_wall_wo_overlap(bot, radars)
+                                radar_to = self.get_single_biggest_jradar_points()
+                                radar_action = self.jradar(bot, radar_to[0].x, radar_to[0].y)
+                                print "jradar to {},{}. The biggest value is {}".format(radar_action.x, radar_action.y, radar_to[1])
                         radars.append(messages.Pos(radar_action.x, radar_action.y))
                         response.append(radar_action)
                         bot.radar = messages.Pos(radar_action.x, radar_action.y)
@@ -227,7 +229,7 @@ class Ai(base.BaseAi):
                             if not radaring_bot:
                                 radaring_bot = True
                                 print "{} radaring".format(bot.bot_id)
-                                radar_pos = self.radar(bot, self.last_radar_pos.x, self.last_radar_pos.y)
+                                radar_pos = self.jradar(bot, self.last_radar_pos.x, self.last_radar_pos.y)
                                 response.append(radar_pos)
                                 bot.radar = messages.Pos(radar_pos.x, radar_pos.y)
                             else:

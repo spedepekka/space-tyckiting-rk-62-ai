@@ -19,6 +19,7 @@ class BaseAi:
         self.team_id = team_id
         self.config = config #or {}
         self.print_game_config()
+        self.jradar_initial_value = 1
 
         # Calculate all the field points for later use
         self.field_points = set(self.get_positions_in_range(x=0, y=0, radius=self.config.field_radius))
@@ -29,20 +30,67 @@ class BaseAi:
         self.min_optimal_radars = self.optimal_radars_on_field(radar=self.config.radar)
 
         # Field point radar values (Jarno radar)
-        self.jradar_values = Counter()
+        self.jradar_values = Counter() # These are the values for all the field points
+        self.reset_jradar_field()
+
+    def reset_jradar_field(self):
         for point in self.field_points:
-            self.jradar_values.update({point: 1}) # Fill with coordinates and give initial value 1
+            #self.jradar_values.update({point: self.jradar_initial_value})
+            self.jradar_values[point] = self.jradar_initial_value
 
     def increase_jradar_values(self):
         for key, value in self.jradar_values.items():
             self.jradar_values[key] = value + 1
 
+    # Calculate the sum of jradar values for given point
+    def calc_jradar_combination_value(self, x, y):
+        points = self.get_positions_in_range(x, y, self.config.radar)
+        sum = 0
+        lista = []
+        for point in points:
+            sum += self.jradar_values[point]
+        return sum
+
+    # This returns the biggest single coordinate jradar value
+    # Does not count the points around the coordinate
+    # This is just a debug method, don't use for real AI
     def get_biggest_jradar(self):
         biggest = None
         for key, value in self.jradar_values.items():
             if biggest is None or value > biggest[1]:
                 biggest = (key, value)
         return biggest
+
+    # Return the biggest points
+    # Take into account the points around
+    def get_biggest_jradar_points(self):
+        biggest = []
+        for point in self.optimal_radar_points:
+            value = self.calc_jradar_combination_value(point.x, point.y)
+            # Add point if the value is equal
+            if len(biggest) == 0 or value == biggest[0][1]:
+                biggest.append((point, value))
+            # If the value is bigger clear the list and add the point
+            elif value > biggest[0][1]:
+                del biggest[:] # Clear the list
+                biggest.append((point, value))
+                
+        return biggest
+
+    # If there are multiple points this will return one of them by random
+    # If only one, then it is returned
+    def get_single_biggest_jradar_points(self):
+        points = self.get_biggest_jradar_points()
+        if len(points) == 1:
+            return points[0]
+        elif len(points) >= 2:
+            return random.choice(points)
+        return (messages.Pos(0, 0), 0) # This should never happen
+
+    def reset_jradar(self, x, y):
+        points_to_reset = self.get_positions_in_range(x, y, self.config.radar)
+        for point in points_to_reset:
+            self.jradar_values[point] = self.jradar_initial_value
 
     def print_game_config(self):
         """
@@ -99,6 +147,11 @@ class BaseAi:
 
     def get_valid_radars_optimal_wall(self, bot):
         return self.optimal_radar_points
+
+    # Radar to given coordinate and update necessary stuff
+    def jradar(self, bot, x, y):
+        self.reset_jradar(x, y)
+        return self.radar(bot, x, y)
 
     # radars: list of Pos where already radared
     def get_valid_radars_optimal_wall_wo_overlap(self, radars):

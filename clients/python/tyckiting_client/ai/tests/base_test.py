@@ -117,6 +117,7 @@ class BaseAiTest(unittest.TestCase):
     """
 
     def test_increase_jradar_values(self):
+        self.ai.reset_jradar_field()
         self.ai.increase_jradar_values()
         self.ai.jradar_values[messages.Pos(1,1)] = 25
         self.ai.jradar_values[messages.Pos(0,0)] = 10
@@ -130,3 +131,106 @@ class BaseAiTest(unittest.TestCase):
             else:
                 self.assertEqual(value, 4)
         self.assertEqual(self.ai.get_biggest_jradar()[1], 27)
+
+    def test_reset_jradar(self):
+        self.ai.reset_jradar_field()
+        self.ai.increase_jradar_values()
+        self.ai.increase_jradar_values()
+        self.ai.jradar_values[messages.Pos(1,0)] = 25
+        self.ai.jradar_values[messages.Pos(0,0)] = 10
+        self.ai.reset_jradar(0,0)
+        self.assertEqual(self.ai.get_biggest_jradar()[1], 3)
+        self.assertEqual(self.ai.jradar_values[messages.Pos(1,0)], self.ai.jradar_initial_value)
+        self.assertEqual(self.ai.jradar_values[messages.Pos(0,0)], self.ai.jradar_initial_value)
+        self.assertEqual(self.ai.jradar_values[messages.Pos(-4,0)], 3)
+        self.assertEqual(self.ai.jradar_values[messages.Pos(0,14)], 3)
+
+    def test_reset_jradar_field(self):
+        self.ai.reset_jradar_field()
+        self.ai.jradar_values[messages.Pos(1,0)] = 25
+        self.ai.jradar_values[messages.Pos(0,0)] = 25
+        self.ai.jradar_values[messages.Pos(0,1)] = 25
+        self.ai.reset_jradar_field()
+        self.assertEqual(self.ai.jradar_values[messages.Pos(1,0)], self.ai.jradar_initial_value)
+        self.assertEqual(self.ai.jradar_values[messages.Pos(0,0)], self.ai.jradar_initial_value)
+        self.assertEqual(self.ai.jradar_values[messages.Pos(0,1)], self.ai.jradar_initial_value)
+        self.assertEqual(self.ai.jradar_values[messages.Pos(1,1)], self.ai.jradar_initial_value)
+
+    def test_calc_jradar_combination_value(self):
+        self.ai.reset_jradar_field()
+        self.assertEqual(self.ai.calc_jradar_combination_value(0, 0), 37*self.ai.jradar_initial_value)
+
+    def test_get_biggest_jradar_points(self):
+        self.ai.reset_jradar_field()
+        self.ai.jradar_values[messages.Pos(0,0)] = 11
+        self.ai.jradar_values[messages.Pos(3,0)] = 11
+        self.ai.jradar_values[messages.Pos(-3,0)] = 11
+        points = set(self.ai.get_biggest_jradar_points())
+        expected_points = set([
+            (messages.Pos(x=0, y=0), 67)
+        ])
+        self.assertEqual(points, expected_points)
+
+    def test_get_biggest_jradar_points_2(self):
+        self.ai.reset_jradar_field()
+        self.ai.jradar_values[messages.Pos(0,0)] = 11
+        self.ai.jradar_values[messages.Pos(2,0)] = 11
+        self.ai.jradar_values[messages.Pos(-3,0)] = 11
+        points = set(self.ai.get_biggest_jradar_points())
+        expected_points = set([
+            (messages.Pos(x=0, y=0), 67),
+            (messages.Pos(x=-1, y=0), 67),
+            (messages.Pos(x=0, y=-1), 67),
+            (messages.Pos(x=-1, y=1), 67)
+        ])
+        self.assertEqual(points, expected_points)
+
+    def test_get_single_biggest_jradar_points(self):
+        self.ai.reset_jradar_field()
+        self.ai.jradar_values[messages.Pos(0,0)] = 11
+        self.ai.jradar_values[messages.Pos(3,0)] = 11
+        self.ai.jradar_values[messages.Pos(-3,0)] = 11
+        point = self.ai.get_single_biggest_jradar_points()
+        self.assertEqual(point, (messages.Pos(0,0), 67))
+
+    def test_get_positions_in_range_1(self):
+        positions = set(self.ai.get_positions_in_range(0, 0, 3))
+        expected_positions = set([
+            messages.Pos(x=0, y=0)
+        ])
+        self.assertTrue(expected_positions.issubset(positions))
+
+    def test_get_positions_in_range_2(self):
+        positions = set(self.ai.get_positions_in_range(1, 1, 3))
+        expected_positions = set([
+            messages.Pos(x=1, y=1)
+        ])
+        self.assertEqual(len(positions), 37)
+        self.assertTrue(expected_positions.issubset(positions))
+
+    def test_get_positions_in_range_3(self):
+        positions = set(self.ai.get_positions_in_range(0, 0, 1))
+        expected_positions = set([
+            messages.Pos(x=0, y=0),
+            messages.Pos(x=1, y=0),
+            messages.Pos(x=0, y=1),
+            messages.Pos(x=-1, y=1),
+            messages.Pos(x=-1, y=0),
+            messages.Pos(x=0, y=-1),
+            messages.Pos(x=1, y=-1)
+        ])
+        self.assertEqual(positions, expected_positions)
+
+    def test_get_positions_in_range_wo_cur_pos_1(self):
+        positions = set(self.ai.get_positions_in_range_wo_cur_pos(0, 0, 3))
+        expected_positions = set([
+            messages.Pos(x=0, y=0)
+        ])
+        self.assertFalse(expected_positions.issubset(positions))
+
+    def test_get_positions_in_range_wo_cur_pos_2(self):
+        positions = set(self.ai.get_positions_in_range_wo_cur_pos(1, 1, 3))
+        expected_positions = set([
+            messages.Pos(x=1, y=1)
+        ])
+        self.assertFalse(expected_positions.issubset(positions))
