@@ -37,6 +37,7 @@ class Bot(object):
         self.shoot = None
         self.radar = None
         self.move = None
+        self.panic_counter = 0
 
 class Team(object):
     def __init__(self, name, teamId, bots=None, **kwargs):

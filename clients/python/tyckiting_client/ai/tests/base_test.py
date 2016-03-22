@@ -234,3 +234,20 @@ class BaseAiTest(unittest.TestCase):
             messages.Pos(x=1, y=1)
         ])
         self.assertFalse(expected_positions.issubset(positions))
+
+    def test_should_i_move(self):
+        bot = messages.Bot(0, "potti", 0)
+
+        bot.detected = False
+        bot.panic_counter = 0
+        (ebot, mybool) = self.ai.should_i_move(bot, 2)
+
+        bot.detected = True
+        (ebot, mybool) = self.ai.should_i_move(bot, 2)
+        self.assertTrue(mybool)
+        ebot.detected = False
+        (ebot, mybool) = self.ai.should_i_move(ebot, 2)
+        self.assertTrue(mybool)
+        (ebot, mybool) = self.ai.should_i_move(ebot, 2)
+        self.assertFalse(mybool)
+

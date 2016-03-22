@@ -130,3 +130,4 @@ class HunterAiTest(unittest.TestCase):
             messages.Pos(x=12, y=2),
         ))
         self.assertEqual(positions, expected_positions)
+

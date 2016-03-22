@@ -389,3 +389,12 @@ class BaseAi:
             points_to_check |= new_points
             checked_points.add(p)
         return checked_points
+
+    def should_i_move(self, bot, limit):
+        if bot.detected:
+            bot.panic_counter = 1
+            return (bot, True)
+        if bot.panic_counter > 0 and bot.panic_counter < limit:
+            bot.panic_counter += 1
+            return (bot, True)
+        return (bot, False)
