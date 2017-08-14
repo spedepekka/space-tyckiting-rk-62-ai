@@ -1,12 +1,12 @@
 # Space Tyckiting AI
 
-This is our [Space Tyckiting][space-tyckiting] ([Github][github])Python AI which placed [2nd in Oulu 2016][results].
+This is our [Space Tyckiting][space-tyckiting] ([Github][github]) Python AI which placed [2nd in Oulu 2016][results].
 
 **WARNING**: The AI is horrible spaghetti code!
 
 There are many AI's. The original idea was to create multiple AI's, make them fight each other and eventually pick the best. See [this folder](clients/python/tyckiting_client/ai) for AI's.
 
-## Contributors / our team
+## Our team RK-62
 
 * [Lasse Häll][lasse]
 * [Jarno Tuovinen][jarno]
