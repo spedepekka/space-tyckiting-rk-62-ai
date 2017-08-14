@@ -12,6 +12,15 @@ There are many AI's. The original idea was to create multiple AI's, make them fi
 * [Jarno Tuovinen][jarno] ([Jarno Tuovinen Github][jarno-gh])
 * [Toni Vaakanainen][toni] ([Toni Vaakanainen Github][toni-gh])
 
+## Other
+
+Links to this repo
+
+https://bitbucket.org/spedepekka/space-tyckiting-rk-62-ai
+
+https://github.com/spedepekka/space-tyckiting-rk-62-ai
+
+
 [space-tyckiting]: http://spacetyckiting.futurice.com/
 [github]: https://github.com/futurice/space-tyckiting
 [results]: http://challonge.com/space_tyckiting_oulu
