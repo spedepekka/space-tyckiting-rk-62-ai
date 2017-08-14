@@ -1,6 +1,6 @@
 # Space Tyckiting AI
 
-This is our [Space Tyckiting][space-tyckiting] Python AI which placed [2nd in Oulu 2016][results].
+This is our [Space Tyckiting][space-tyckiting] ([Github][github])Python AI which placed [2nd in Oulu 2016][results].
 
 **WARNING**: The AI is horrible spaghetti code!
 
@@ -13,6 +13,7 @@ There are many AI's. The original idea was to create multiple AI's, make them fi
 * [Toni Vaakanainen][toni]
 
 [space-tyckiting]: http://spacetyckiting.futurice.com/
+[github]: https://github.com/futurice/space-tyckiting
 [results]: http://challonge.com/space_tyckiting_oulu
 [jarno]: https://www.linkedin.com/in/jarnotuovinen
 [toni]: https://www.linkedin.com/in/toni-vaakanainen
