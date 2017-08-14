@@ -1,19 +1,19 @@
-# Space Tyckiting
+# Space Tyckiting AI
 
-![Space Tyckiting banner](space-tyckiting-banner.jpg)
+This is our [Space Tyckiting][space-tyckiting] Python AI which placed [2nd in Oulu 2016][results].
 
-Welcome to **Futurice Space Tyckiting**!
+**WARNING**: The AI is horrible spaghetti code!
 
-This repository contains the Space Tyckiting server and client skeletons.
+There are many AI's. The original idea was to create multiple AI's, make them fight each other and eventually pick the best. See [this folder](clients/python/tyckiting_client/ai) for AI's.
 
-Space Tyckiting server communicates via a *JSON-over-TCP* protocol, making it possible for the clients to be implemented in any language of your choice.
+## Contributors / our team
 
-Ready-made client skeletons, which provide a convenient network communication layer, have been provided for a number of programming languages. You may also wish to create your very own client from scratch &mdash; no problem! Take a look at the example clients and documentation and code ahead! If you'd like to share your client skeleton, please issue a Pull Request.
+* [Lasse Häll][lasse]
+* [Jarno Tuovinen][jarno]
+* [Toni Vaakanainen][toni]
 
-If you discover any bugs or issues with the server or the provided client skeletons, please let us know, and if possible, issue a PR with a fix!
-
-Please see the server [README](server/README.md), and the README's of the clients, for details on how to develop your AI and run Space Tyckiting.
-
-Happy Space Tyckiting!
-
-![Space Tyckiting](space-tyckiting.gif)
+[space-tyckiting]: http://spacetyckiting.futurice.com/
+[results]: http://challonge.com/space_tyckiting_oulu
+[jarno]: https://www.linkedin.com/in/jarnotuovinen
+[toni]: https://www.linkedin.com/in/toni-vaakanainen
+[lasse]: https://www.linkedin.com/in/halllasse/
