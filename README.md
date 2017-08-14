@@ -10,7 +10,7 @@ There are many AI's. The original idea was to create multiple AI's, make them fi
 
 * [Lasse Häll][lasse] ([Lasse Häll Github 1][lasse-gh1], [Lasse Häll Github 2][lasse-gh2])
 * [Jarno Tuovinen][jarno] ([Jarno Tuovinen Github][jarno-gh])
-* [Toni Vaakanainen][toni] ([Toni Vaakanainen Github][toni-gh])
+* [Toni Vaakanainen][toni] ([Toni Vaakanainen Github 1][toni-gh1])([Toni Vaakanainen Github 2][toni-gh2])
 
 ## Other
 
@@ -27,7 +27,8 @@ https://github.com/spedepekka/space-tyckiting-rk-62-ai
 [jarno]: https://www.linkedin.com/in/jarnotuovinen
 [jarno-gh]: https://github.com/spedepekka
 [toni]: https://www.linkedin.com/in/toni-vaakanainen
-[toni-gh]: https://github.com/ToniVaakanainen
+[toni-gh1]: https://github.com/ToniVaakanainen
+[toni-gh2]: https://github.com/TVaakanainen
 [lasse]: https://www.linkedin.com/in/halllasse/
 [lasse-gh1]: https://github.com/LasseHall
 [lasse-gh2]: https://github.com/domestus
